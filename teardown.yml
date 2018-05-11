@@ -4,6 +4,13 @@
   connection: local
   vars:
     res_group: test
+
+  pre_tasks:
+    - name: Validate that we have a lab_id
+      assert:
+          that: lab_id is defined 
+          msg: You need to pass lab_id as an extra parameter to execute this playbook
+          
   tasks:
     - name: Delete virtual machine
       azure_rm_virtualmachine:
