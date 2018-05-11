@@ -1,0 +1,67 @@
+---
+- name: Test Azure
+  hosts: localhost
+  connection: local
+  vars:
+    res_group: test
+  tasks:
+    - name: Delete virtual machine
+      azure_rm_virtualmachine:
+        state: absent
+        resource_group: "{{ res_group }}"
+        name: "{{ item }}"
+      with_items:
+        - "centos{{ lab_id }}"
+        - "win{{ lab_id }}"
+
+    - name: Delete NIC
+      azure_rm_networkinterface:
+        state: absent
+        resource_group: "{{ res_group }}"
+        name: "{{ item }}"
+      with_items:
+        - "nic01{{ lab_id }}"
+        - "nic02{{ lab_id }}"
+
+    - name: Delete NIC security group
+      azure_rm_securitygroup:
+        resource_group: "{{ res_group }}"
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - "nic01{{ lab_id }}"
+        - "nic02{{ lab_id }}"
+
+    - name: Delete security group that allows SSH
+      azure_rm_securitygroup:
+        resource_group: "{{ res_group }}"
+        name: "sg{{lab_id}}"
+        state: absent
+
+    - name: Delete public ip
+      azure_rm_publicipaddress:
+        resource_group: "{{ res_group }}"
+        state: absent
+        name: "{{ item }}"
+      with_items:
+        - "pbi01{{ lab_id }}"
+        - "pbi02{{ lab_id }}"
+
+    - name: Delete subnet
+      azure_rm_subnet:
+        resource_group: "{{ res_group }}"
+        name: "sn{{ lab_id }}"
+        virtual_network_name: "vn{{ lab_id }}"
+        state: absent
+
+    - name: Delete virtual network
+      azure_rm_virtualnetwork:
+        resource_group: "{{ res_group }}"
+        name: "vn{{ lab_id }}"
+        state: absent
+
+    - name: Delete storage account
+      azure_rm_storageaccount:
+        resource_group: "{{ res_group }}"
+        name: "lrs{{ lab_id }}"
+        state: absent
