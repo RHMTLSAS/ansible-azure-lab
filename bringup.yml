@@ -8,10 +8,8 @@
     virtual_network_cidr: 192.168.33.0/24
     username: "ansible"
     password: "Password1!"
-    #centos_vm_size: Standard_B1
     centos_vm_size: Standard_D2s_v3
     centos_ip_address: "192.168.33.51"
-    #windows_vm_size: Basic_B2
     windows_vm_size: Standard_D2s_v3
     windows_ip_address: "192.168.33.50"
     ansible_tower_basename: "ansible-tower-setup"
@@ -160,8 +158,6 @@
         security_group: "sg{{ lab_id }}"
       tags:
         - prep-centos
-    # - name: What do we have here
-    #   debug: msg="{{ create_centos_vm_output }}"
 
     - name: Add host to dynamic inventory
       add_host:
@@ -170,14 +166,9 @@
         ansible_user: "{{ username }}"
         ansible_ssh_private_key_file: "insecure"
         ansible_sudo_pass: "{{ password }}"
+        ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
       tags:
         - prep-centos
-
-    # - name: show all the hosts matching the pattern, ie all but the group www
-    #   debug:
-    #     msg: "{{ item }}"
-    #   with_inventory_hostnames:
-    #     - all
 #
 # Create Windows NIC and VM 
 #
@@ -209,14 +200,26 @@
         admin_username: "{{ username }}"
         admin_password: "{{ password }}"
         network_interfaces: "nic02{{lab_id}}"
-        custom_data:
-          commandToExecute: "@provision.ps1"
         image:
           offer: "Windows-10"
           publisher: MicrosoftWindowsDesktop
           sku: "RS3-Pro"
           version: latest
       register: create_windows_vm_output
+      tags:
+        - prep-windows
+
+    - name: Create Windows VM Extension
+      azure_rm_virtualmachine_extension:
+        name: "vmext{{ lab_id }}"
+        resource_group: "{{ res_group }}"
+        virtual_machine_name: "win{{ lab_id }}"
+        publisher: Microsoft.Compute
+        virtual_machine_extension_type: CustomScriptExtension
+        type_handler_version: 1.9
+        settings:
+          CommandToExecute: "powershell -ExecutionPolicy Unrestricted -file provision.ps1" 
+          FileUris: [ "https://raw.githubusercontent.com/sperreault/ansible-azure-lab/master/provision.ps1" ]
       tags:
         - prep-windows
 
@@ -236,9 +239,6 @@
       tags:
         - prep-windows
 
-    # - name: What do we have here
-    #   debug: msg="{{ create_windows_vm_output }}"
-
     - name: Add host to dynamic inventory
       add_host:
         name: "windows"
@@ -250,7 +250,10 @@
         ansible_winrm_transport: basic      
       tags:
         - prep-windows
-        
+
+#
+# Install Tower and Prepare the Linux Host
+#
     - name: Prepare the Linux Host
       become: true
       block:
@@ -264,15 +267,32 @@
         - replace:
             path: "/var/tmp/{{ ansible_tower_basename }}-{{ ansible_tower_version }}/inventory" 
             regexp: "^(.*)_password=''" 
-            replace: "\\1_password='{{ password }}'"
-        # - command: "/var/tmp/{{ ansible_tower_basename }}-{{ ansible_tower_version }}/setup.sh"
+            replace: "\\1_password='ansible'"
+        - command: "/var/tmp/{{ ansible_tower_basename }}-{{ ansible_tower_version }}/setup.sh"
       delegate_to: centos
       tags:
         - prep-centos
-
+#
+# Install VisualStudio Code and Putty on the Windows VM
+#
     - name: Prepare the Windows Host
       block:
         - win_ping:
+        - win_chocolatey:
+            name: "{{ item }}"
+            state: present
+          items:
+            - putty
+            - visualstudiocode
+        - win_file:
+            path: "c:\\labs"
+            state: directory 
+        - win_copy:
+            src: "{{ item }}"
+            dest: "c:\\labs"
+          with_items:
+            - "./insecure"
+            - "./insecure.pub"
       delegate_to: windows
       tags:
         - prep-windows   
