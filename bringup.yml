@@ -251,6 +251,7 @@
       tags:
         - prep-windows
 
+
 #
 # Install Tower and Prepare the Linux Host
 #
@@ -281,18 +282,34 @@
         - win_chocolatey:
             name: "{{ item }}"
             state: present
-          items:
+          with_items:
             - putty
+            - git
             - visualstudiocode
         - win_file:
-            path: "c:\\labs"
+            path: 'c:\labs'
             state: directory 
         - win_copy:
             src: "{{ item }}"
-            dest: "c:\\labs"
+            dest: "c:\\labs\\{{ item }}"
           with_items:
-            - "./insecure"
-            - "./insecure.pub"
+            - "insecure"
+            - "insecure.pub"
       delegate_to: windows
       tags:
         - prep-windows   
+
+#
+# Create a local file with the information
+#
+    - name: Add entry to lab_id.txt
+      tags:
+        - always
+      copy:
+        path: "{{ lab_id }}.txt"
+        content: |
+          Lab {{ lab_id }}
+          Windows machine ip is {{ create_windows_vm_output.ansible_facts.azure_vm.properties.networkProfile.networkInterfaces[0].properties.ipConfigurations[0].properties.publicIPAddress.properties.ipAddress }} you can now RDP to it.
+          Tower url is https://{{ create_centos_vm_output.ansible_facts.azure_vm.properties.networkProfile.networkInterfaces[0].properties.ipConfigurations[0].properties.publicIPAddress.properties.ipAddress }}/
+
+        
