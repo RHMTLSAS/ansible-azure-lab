@@ -220,7 +220,8 @@
         name: "centos"
         ansible_host: "{{ create_centos_vm_output.ansible_facts.azure_vm.properties.networkProfile.networkInterfaces[0].properties.ipConfigurations[0].properties.publicIPAddress.properties.ipAddress }}"
         ansible_user: "{{ username }}"
-        ansible_ssh_private_key_file: "insecure"
+        #ansible_ssh_private_key_file: "insecure"
+        ansible_ssh_pass: "{{ password }}"
         ansible_sudo_pass: "{{ password }}"
         ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
       tags:
