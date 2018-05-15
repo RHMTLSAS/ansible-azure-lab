@@ -17,6 +17,11 @@
     ansible_tower_archive: "{{ ansible_tower_basename }}-{{ ansible_tower_version }}.tar.gz"
     ansible_tower_release_url: "http://releases.ansible.com/ansible-tower/setup/{{ ansible_tower_archive }}"
 
+    azure_client_id: "{{ lookup('env', 'AZURE_CLIENT_ID')}}"
+    azure_tenant: "{{ lookup('env', 'AZURE_TENANT')}}"
+    azure_subscription_id: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID')}}"
+    azure_secret: "{{ lookup('env', 'AZURE_SECRET')}}"
+
   pre_tasks:
     - name: Validate that we have a lab_id
       assert:
@@ -28,6 +33,10 @@
 #
     - name: Create storage account
       azure_rm_storageaccount:
+        client_id: "{{ azure_client_id }}"
+        tenant: "{{ azure_tenant }}"
+        subscription_id: "{{ azure_subscription_id }}"
+        secret: "{{ azure_secret }}"
         resource_group: "{{ res_group }}"
         name: "lrs{{ lab_id }}"
         account_type: "{{ storage_class }}"
@@ -36,6 +45,10 @@
 
     - name: Create virtual network
       azure_rm_virtualnetwork:
+        client_id: "{{ azure_client_id }}"
+        tenant: "{{ azure_tenant }}"
+        subscription_id: "{{ azure_subscription_id }}"
+        secret: "{{ azure_secret }}"
         resource_group: "{{ res_group }}"
         name: "vn{{ lab_id }}"
         address_prefixes: "{{virtual_network_cidr}}"
@@ -44,6 +57,10 @@
 
     - name: Add subnet
       azure_rm_subnet:
+        client_id: "{{ azure_client_id }}"
+        tenant: "{{ azure_tenant }}"
+        subscription_id: "{{ azure_subscription_id }}"
+        secret: "{{ azure_secret }}"
         resource_group: "{{ res_group }}"
         name: "sn{{ lab_id }}"
         address_prefix: "{{virtual_network_cidr}}"
@@ -53,6 +70,10 @@
 
     - name: Create public ip for CentOS VM
       azure_rm_publicipaddress:
+        client_id: "{{ azure_client_id }}"
+        tenant: "{{ azure_tenant }}"
+        subscription_id: "{{ azure_subscription_id }}"
+        secret: "{{ azure_secret }}"
         resource_group: "{{ res_group }}"
         allocation_method: Static
         name: "pbi01{{ lab_id }}"
@@ -61,6 +82,10 @@
 
     - name: Create public ip for Windows VM
       azure_rm_publicipaddress:
+        client_id: "{{ azure_client_id }}"
+        tenant: "{{ azure_tenant }}"
+        subscription_id: "{{ azure_subscription_id }}"
+        secret: "{{ azure_secret }}"
         resource_group: "{{ res_group }}"
         allocation_method: Static
         name: "pbi02{{ lab_id }}"
@@ -69,6 +94,10 @@
 
     - name: Create security group that allows incoming traffic on SSH/HTTP/HTTPS/RDP/WINRM
       azure_rm_securitygroup:
+        client_id: "{{ azure_client_id }}"
+        tenant: "{{ azure_tenant }}"
+        subscription_id: "{{ azure_subscription_id }}"
+        secret: "{{ azure_secret }}"
         resource_group: "{{ res_group }}"
         name: "sg{{lab_id}}"
         rules:
@@ -110,6 +139,10 @@
 #
     - name: Create NIC for CentOS VM
       azure_rm_networkinterface:
+        client_id: "{{ azure_client_id }}"
+        tenant: "{{ azure_tenant }}"
+        subscription_id: "{{ azure_subscription_id }}"
+        secret: "{{ azure_secret }}"
         resource_group: "{{ res_group }}"
         name: "nic01{{ lab_id }}"
         virtual_network: "vn{{ lab_id }}"
@@ -126,6 +159,10 @@
 
     - name: Create Centos VM
       azure_rm_virtualmachine:
+        client_id: "{{ azure_client_id }}"
+        tenant: "{{ azure_tenant }}"
+        subscription_id: "{{ azure_subscription_id }}"
+        secret: "{{ azure_secret }}"
         resource_group: "{{ res_group }}"
         name: "centos{{ lab_id }}"
         vm_size: "{{ centos_vm_size }}"
@@ -150,6 +187,10 @@
 
     - name: Reset CentOS NIC
       azure_rm_networkinterface:
+        client_id: "{{ azure_client_id }}"
+        tenant: "{{ azure_tenant }}"
+        subscription_id: "{{ azure_subscription_id }}"
+        secret: "{{ azure_secret }}"
         resource_group: "{{ res_group }}"
         name: "nic01{{ lab_id }}"
         virtual_network: "vn{{ lab_id }}"
@@ -179,6 +220,10 @@
 #
     - name: Create NIC for Windows VM
       azure_rm_networkinterface:
+        client_id: "{{ azure_client_id }}"
+        tenant: "{{ azure_tenant }}"
+        subscription_id: "{{ azure_subscription_id }}"
+        secret: "{{ azure_secret }}"
         resource_group: "{{ res_group }}"
         name: "nic02{{ lab_id }}"
         virtual_network: "vn{{ lab_id }}"
@@ -195,6 +240,10 @@
 
     - name: Create Windows VM
       azure_rm_virtualmachine:
+        client_id: "{{ azure_client_id }}"
+        tenant: "{{ azure_tenant }}"
+        subscription_id: "{{ azure_subscription_id }}"
+        secret: "{{ azure_secret }}"
         resource_group: "{{ res_group }}"
         name: "win{{ lab_id }}"
         os_type: "Windows"
@@ -216,6 +265,10 @@
 
     - name: Create Windows VM Extension
       azure_rm_virtualmachine_extension:
+        client_id: "{{ azure_client_id }}"
+        tenant: "{{ azure_tenant }}"
+        subscription_id: "{{ azure_subscription_id }}"
+        secret: "{{ azure_secret }}"
         name: "vmext{{ lab_id }}"
         resource_group: "{{ res_group }}"
         virtual_machine_name: "win{{ lab_id }}"
@@ -230,6 +283,10 @@
 
     - name: Reset Windows NIC
       azure_rm_networkinterface:
+        client_id: "{{ azure_client_id }}"
+        tenant: "{{ azure_tenant }}"
+        subscription_id: "{{ azure_subscription_id }}"
+        secret: "{{ azure_secret }}"
         resource_group: "{{ res_group }}"
         name: "nic02{{ lab_id }}"
         virtual_network: "vn{{ lab_id }}"
@@ -263,6 +320,9 @@
     - name: Prepare the Linux Host
       become: true
       block:
+        - wait_for:
+            port: 22
+            timeout: 3000
         - get_url:
             dest: /var/tmp # required. Absolute path of where to download the file to.,If C(dest) is a directory, either the server provided filename or, if none provided, the base name of the URL on the remote server will be used. If a directory, C(force) has no effect.,If C(dest) is a directory, the file will always be downloaded (regardless of the C(force) option), but replaced only if the contents changed..
             url: "{{ ansible_tower_release_url }}" # required. HTTP, HTTPS, or FTP URL in the form (http|https|ftp)://[user[:pass]]@host.domain[:port]/path
@@ -287,7 +347,9 @@
 #
     - name: Prepare the Windows Host
       block:
-        - win_ping:
+        - wait_for:
+            port: 5985
+            timeout: 3000
         - win_chocolatey:
             name: "{{ item }}"
             state: present
