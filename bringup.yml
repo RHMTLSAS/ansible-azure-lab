@@ -2,6 +2,7 @@
 - name: Create Azure Ansible Lab
   hosts: localhost
   connection: local
+  gather_facts: false
   vars:
     res_group: test
     storage_class: Premium_LRS
@@ -25,8 +26,17 @@
   pre_tasks:
     - name: Validate that we have a lab_id
       assert:
-          that: lab_id is defined 
+          that: lab_id is defined
           msg: You need to pass lab_id as an extra parameter to execute this playbook
+
+    - name: Do we have our AZURE Credentials
+      assert:
+        { that: "{{ item}} != ''" }
+      with_items:
+        - azure_client_id
+        - azure_tenant
+        - azure_subscription_id
+        - azure_secret 
   tasks:
 #
 # Generic tasks to bring the environment
