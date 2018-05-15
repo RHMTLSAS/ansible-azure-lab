@@ -1,6 +1,7 @@
 ---
 - name: Test Azure
   hosts: localhost
+  gather_facts: false
   connection: local
   vars:
     res_group: test

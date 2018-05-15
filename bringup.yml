@@ -9,9 +9,9 @@
     virtual_network_cidr: 192.168.33.0/24
     username: "ansible"
     password: "Password1!"
-    centos_vm_size: Standard_D2s_v3
+    centos_vm_size: Standard_B2ms
     centos_ip_address: "192.168.33.51"
-    windows_vm_size: Standard_D2s_v3
+    windows_vm_size: Standard_B2ms
     windows_ip_address: "192.168.33.50"
     ansible_tower_basename: "ansible-tower-setup"
     ansible_tower_version: "3.2.4"
@@ -266,10 +266,15 @@
         admin_password: "{{ password }}"
         network_interfaces: "nic02{{lab_id}}"
         image:
-          offer: "Windows-10"
-          publisher: MicrosoftWindowsDesktop
-          sku: "RS3-Pro"
-          version: latest
+          publisher: "MicrosoftWindowsServer"
+          offer: "WindowsServer"
+          sku: "2016-Datacenter"
+          version: "latest"
+        # image:
+        #   offer: "Windows-10"
+        #   publisher: MicrosoftWindowsDesktop
+        #   sku: "RS3-Pro"
+        #   version: latest
       register: create_windows_vm_output
       tags:
         - prep-windows
@@ -289,6 +294,8 @@
         settings:
           CommandToExecute: "powershell -ExecutionPolicy Unrestricted -file provision.ps1" 
           FileUris: [ "https://raw.githubusercontent.com/sperreault/ansible-azure-lab/master/provision.ps1" ]
+      ignore_errors: true
+      register: create_windows_vm_extension
       tags:
         - prep-windows
 
@@ -356,16 +363,33 @@
 #
 # Install VisualStudio Code and Putty on the Windows VM
 #
+    - name: Retry the windows extensions if they failed
+      azure_rm_virtualmachine_extension:
+        client_id: "{{ azure_client_id }}"
+        tenant: "{{ azure_tenant }}"
+        subscription_id: "{{ azure_subscription_id }}"
+        secret: "{{ azure_secret }}"
+        name: "vmext{{ lab_id }}"
+        resource_group: "{{ res_group }}"
+        virtual_machine_name: "win{{ lab_id }}"
+        publisher: Microsoft.Compute
+        virtual_machine_extension_type: CustomScriptExtension
+        type_handler_version: 1.9
+        settings:
+          CommandToExecute: "powershell -ExecutionPolicy Unrestricted -file provision.ps1" 
+          FileUris: [ "https://raw.githubusercontent.com/sperreault/ansible-azure-lab/master/provision.ps1" ]
+      when: create_windows_vm_extension is failed
+
     - name: Prepare the Windows Host
       block:
-        - wait_for:
-            port: 5985
+        - wait_for_connection:
+            delay: 60
             timeout: 3000
         - win_chocolatey:
             name: "{{ item }}"
             state: present
           with_items:
-            - putty
+            - putty.install
             - git
             - visualstudiocode
         - win_file:
