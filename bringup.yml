@@ -4,7 +4,7 @@
   connection: local
   gather_facts: false
   vars:
-    res_group: test
+    res_group: lab
     storage_class: Standard_LRS
     virtual_network_cidr: 192.168.33.0/24
     username: "ansible"
@@ -42,6 +42,12 @@
 #
 # Generic tasks to bring the environment
 #
+
+    - name: create ressource group 
+      azure_rm_resourcegroup:
+        name: lab
+        location: eastus
+
     - name: Create storage account
       azure_rm_storageaccount:
         client_id: "{{ azure_client_id }}"
