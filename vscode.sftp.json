@@ -1,0 +1,7 @@
+{
+    "protocol": "sftp",
+    "host": "192.168.33.51",
+    "username": "ansible",
+    "remotePath": "./labs",
+    "privateKeyPath": "c:/labs/insecure"
+}

@@ -13,6 +13,7 @@
     centos_ip_address: "192.168.33.51"
     windows_vm_size: Standard_B2ms
     windows_ip_address: "192.168.33.50"
+    ansible_tower_install: false
     ansible_tower_basename: "ansible-tower-setup"
     ansible_tower_version: "3.2.4"
     ansible_tower_archive: "{{ ansible_tower_basename }}-{{ ansible_tower_version }}.tar.gz"
@@ -341,6 +342,18 @@
         - wait_for:
             port: 22
             timeout: 3000
+        - file:
+            path: "/home/{{ username }}/labs"
+            state: "directory"
+            owner: "{{ username }}"
+            mode: 0755
+            group: "{{ username }}"
+        - template:
+            dest: "/etc/sudoers.d/waagent" 
+            src: "waagent.j2" 
+            mode: 0600
+            owner: root 
+            group: root    
         - get_url:
             dest: /var/tmp # required. Absolute path of where to download the file to.,If C(dest) is a directory, either the server provided filename or, if none provided, the base name of the URL on the remote server will be used. If a directory, C(force) has no effect.,If C(dest) is a directory, the file will always be downloaded (regardless of the C(force) option), but replaced only if the contents changed..
             url: "{{ ansible_tower_release_url }}" # required. HTTP, HTTPS, or FTP URL in the form (http|https|ftp)://[user[:pass]]@host.domain[:port]/path
@@ -356,7 +369,7 @@
             replace: "\\1_password='ansible'"
           when: get_tower.changed
         - command: "/var/tmp/{{ ansible_tower_basename }}-{{ ansible_tower_version }}/setup.sh"
-          when: get_tower.changed
+          when: get_tower.changed or ansible_tower_install != false
       delegate_to: centos
       tags:
         - prep-centos
@@ -395,12 +408,19 @@
         - win_file:
             path: 'c:\labs'
             state: directory 
+          with_items:
+            - 'c:\labs'
+            - 'c:\labs\.vscode'
         - win_copy:
             src: "{{ item }}"
             dest: "c:\\labs\\{{ item }}"
           with_items:
             - "insecure"
             - "insecure.pub"
+            - "vscode.sftp.json"
+        - win_command: "code.exe --install-extension liximomo.sftp"
+          args:
+            chdir: "C:\\Program Files\\Microsoft VS Code"
       delegate_to: windows
       tags:
         - prep-windows   
