@@ -369,7 +369,12 @@
             replace: "\\1_password='ansible'"
           when: get_tower.changed
         - command: "/var/tmp/{{ ansible_tower_basename }}-{{ ansible_tower_version }}/setup.sh"
-          when: get_tower.changed or ansible_tower_install != false
+          when: get_tower.changed or ansible_tower_install != false 
+        - yum:
+            pkg={{item}} state=installed
+            with_items:
+               - python2-winrm
+               - python2-requests
       delegate_to: centos
       tags:
         - prep-centos
