@@ -45,7 +45,7 @@
 
     - name: create ressource group 
       azure_rm_resourcegroup:
-        name: lab
+        name: "{{ res_group }}"
         location: eastus
 
     - name: Create storage account
