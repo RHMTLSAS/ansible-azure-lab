@@ -428,9 +428,6 @@
             - "insecure"
             - "insecure.pub"
             - "vscode.sftp.json"
-        - win_command: "code.exe --install-extension liximomo.sftp"
-          args:
-            chdir: "C:\\Program Files\\Microsoft VS Code"
       delegate_to: windows
       tags:
         - prep-windows   
