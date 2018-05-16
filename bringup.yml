@@ -5,13 +5,13 @@
   gather_facts: false
   vars:
     res_group: test
-    storage_class: Premium_LRS
+    storage_class: Standard_LRS
     virtual_network_cidr: 192.168.33.0/24
     username: "ansible"
     password: "Password1!"
-    centos_vm_size: Standard_B2ms
+    centos_vm_size: Standard_D2_v3
     centos_ip_address: "192.168.33.51"
-    windows_vm_size: Standard_B2ms
+    windows_vm_size: Standard_D2_v3
     windows_ip_address: "192.168.33.50"
     ansible_tower_install: false
     ansible_tower_basename: "ansible-tower-setup"
