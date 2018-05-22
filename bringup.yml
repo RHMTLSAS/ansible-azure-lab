@@ -45,6 +45,10 @@
 
     - name: create ressource group 
       azure_rm_resourcegroup:
+        client_id: "{{ azure_client_id }}"
+        tenant: "{{ azure_tenant }}"
+        subscription_id: "{{ azure_subscription_id }}"
+        secret: "{{ azure_secret }}"
         name: "{{ res_group }}"
         location: eastus
 
