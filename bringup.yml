@@ -432,6 +432,10 @@
             - "insecure"
             - "insecure.pub"
             - "vscode.sftp.json"
+        - win_shortcut:
+            src: C:\Program Files\PuTTY\putty.exe
+            dest: '%Public%\Desktop\Putty.lnk'
+            icon: C:\Program Files\PuTTY\putty.exe,0            
       delegate_to: windows
       tags:
         - prep-windows   
