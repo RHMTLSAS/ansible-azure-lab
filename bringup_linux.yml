@@ -149,7 +149,7 @@
         admin_password: "{{ default_password }}"
         network_interfaces: "nic01{{vm_name}}"
         image:
-          offer: Linux
+          offer: Centos
           publisher: OpenLogic
           sku: '7.4'
           version: latest
