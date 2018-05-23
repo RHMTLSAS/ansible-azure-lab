@@ -7,7 +7,7 @@
   gather_facts: false
   vars:
     vm_name: "testme"
-    res_group: "myresgroup"
+    res_group: "lab_provisionning"
     res_group_location: eastus
     storage_class: Standard_LRS
     virtual_network_cidr: 10.0.0.0/24
