@@ -145,7 +145,7 @@
         storage_account: "lrs{{ vm_name }}"
         storage_container: "vms{{vm_name}}"
         storage_blob: "centos{{vm_name}}.vhd"
-        admin_: "{{ default_username }}"
+        admin_username: "{{ default_username }}"
         admin_password: "{{ default_password }}"
         network_interfaces: "nic01{{vm_name}}"
         image:
