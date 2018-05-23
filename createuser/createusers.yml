@@ -1,0 +1,49 @@
+---
+- name: Create Tower users
+  hosts: localhost
+  vars:
+    password: Password1!
+    username_prefix: utilisateur
+    user_count: 1
+    team_name: Workshop
+    tower_url: https://localhost
+    tower_user: admin
+    tower_pass: ansible
+  tasks:
+    - name: Install ansible-tower-cli
+      yum:
+        name: ansible-tower-cli
+        state: latest
+
+    - name: Disable SSL check (fixing bug with tower_role complaining about tower_verify_ssl)
+      command: tower-cli config verify_ssl no
+
+    - name:  Create User
+      tower_user:
+        username: "{{ item }}"
+        password: "{{ password }}"
+        email: "{{ item }}@example.org"
+        first_name: Firstname
+        last_name: Lastname
+        state: present
+        tower_username: "{{ tower_user }}"
+        tower_password: "{{ tower_pass }}"
+        tower_host: "{{ tower_url }}"
+      with_sequence: start=1 end={{user_count}} format={{username_prefix}}%02d
+
+
+    - name: Assign user to team
+      command: tower-cli role grant --user={{ item }}  --target-team="{{ team_name }}" --type=member -u "{{ tower_user }}" -p "{{ tower_pass }}" -h  "{{ tower_url }}" --insecure
+      with_sequence: start=1 end={{user_count}} format={{username_prefix}}%02d
+
+#    - name: Assign user to team
+#      tower_role: 
+#        user: "{{ item }}"
+#        target_team: "{{ team_name }}"
+#        role: member
+#        state: present
+#        tower_username: "{{ tower_user }}"
+#        tower_password: "{{ tower_pass }}"
+#        tower_host: "{{ tower_url }}"
+#        #tower_verify_ssl: no
+#      with_sequence: start=1 end={{user_count}} format={{username_prefix}}%02d
