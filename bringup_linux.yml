@@ -113,6 +113,12 @@
             access: Allow
             priority: 104
             direction: Inbound
+          - name: Custom
+            protocol: Tcp
+            destination_port_range: 8080
+            access: Allow
+            priority: 104
+            direction: Inbound
 
     - name: Create NIC for Linux VM
       azure_rm_networkinterface:
