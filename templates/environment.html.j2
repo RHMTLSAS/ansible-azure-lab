@@ -1,0 +1,45 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>{{ lab_id }}</title>
+  <meta name="description" content="environment for {{ lab_id}}">
+  <meta name="author" content="rhmtlsas">
+
+  <!-- <link rel="stylesheet" href="css/styles.css?v=1.0"> -->
+
+  <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+<h2>{{lab_id}}</h2>
+<p>
+Informations de connections:<br>
+<table>
+<tr>
+    <th>Environment</th>
+    <th>IP externe</th>
+    <th>IP interne</th>
+    <th>Nom d'usager</th>
+    <th>Mot de passe</th>
+</tr>
+    <td>Windows</td>
+    <td>{{ create_windows_vm_output.ansible_facts.azure_vm.properties.networkProfile.networkInterfaces[0].properties.ipConfigurations[0].properties.publicIPAddress.properties.ipAddress }}</td>
+    <td>{{ windows_ip_address }}</td>
+    <td>{{ username }}</td>
+    <td>{{ password }}</td>
+</tr>
+<tr>
+    <td>Linux</td>
+    <td>{{ create_centos_vm_output.ansible_facts.azure_vm.properties.networkProfile.networkInterfaces[0].properties.ipConfigurations[0].properties.publicIPAddress.properties.ipAddress }}</td>
+    <td>{{ windows_ip_address }}</td>
+    <td>{{ username }}</td>
+    <td>{{ password }}</td>
+</tr>   
+<!--  <script src="js/scripts.js"></script> -->
+</body>
+</html>
