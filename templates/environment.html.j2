@@ -19,9 +19,10 @@
 <h2>{{lab_id}}</h2>
 <p>
 Informations de connections:<br>
-Information de connection a Tower <a href="https://{{ create_centos_vm_output.ansible_facts.azure_vm.properties.networkProfile.networkInterfaces[0].properties.ipConfigurations[0].properties.publicIPAddress.properties.ipAddress }}/">https://{{ create_centos_vm_output.ansible_facts.azure_vm.properties.networkProfile.networkInterfaces[0].properties.ipConfigurations[0].properties.publicIPAddress.properties.ipAddress }}/</a>
-Nom d'usager: admin<br>
-Mot de passe: {{ password }}<br>    
+<br>
+Tower: <a href="https://{{ create_centos_vm_output.ansible_facts.azure_vm.properties.networkProfile.networkInterfaces[0].properties.ipConfigurations[0].properties.publicIPAddress.properties.ipAddress }}/">https://{{ create_centos_vm_output.ansible_facts.azure_vm.properties.networkProfile.networkInterfaces[0].properties.ipConfigurations[0].properties.publicIPAddress.properties.ipAddress }}/</a></br>
+Nom d'usager: admin</br>
+Mot de passe: {{ password }}</br>    
 </p>
 <table border=1>
 <tr>
