@@ -41,7 +41,7 @@ Mot de passe: {{ password }}</br>
 <tr>
     <td>Linux</td>
     <td>{{ create_centos_vm_output.ansible_facts.azure_vm.properties.networkProfile.networkInterfaces[0].properties.ipConfigurations[0].properties.publicIPAddress.properties.ipAddress }}</td>
-    <td>{{ windows_ip_address }}</td>
+    <td>{{ centos_ip_address }}</td>
     <td>{{ username }}</td>
     <td>{{ password }}</td>
 </tr>   
