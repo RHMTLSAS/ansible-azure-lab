@@ -343,12 +343,12 @@
       tags:
         - prep-windows
 
-    - name: Upload environment information
-      template:
-        src: environment.html.j2
-        dest: "/var/www/rhmtlsas.eastus.cloudapp.azure.com/{{ lab_id }}.html"
-        mode: 0644
-      delegate_to: rhmtlsas.eastus.cloudapp.azure.com
+#    - name: Upload environment information
+#      template:
+#        src: environment.html.j2
+#        dest: "/var/www/rhmtlsas.eastus.cloudapp.azure.com/{{ lab_id }}.html"
+#        mode: 0644
+#      delegate_to: rhmtlsas.eastus.cloudapp.azure.com
 
 #
 # Install Tower and Prepare the Linux Host
