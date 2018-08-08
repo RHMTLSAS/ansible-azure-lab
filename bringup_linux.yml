@@ -117,7 +117,7 @@
             protocol: Tcp
             destination_port_range: 8080
             access: Allow
-            priority: 104
+            priority: 105
             direction: Inbound
 
     - name: Create NIC for Linux VM
