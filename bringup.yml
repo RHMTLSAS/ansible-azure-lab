@@ -15,7 +15,7 @@
     windows_ip_address: "192.168.33.50"
     ansible_tower_install: false
     ansible_tower_basename: "ansible-tower-setup"
-    ansible_tower_version: "3.2.4"
+    ansible_tower_version: "3.3.0-1"
     ansible_tower_archive: "{{ ansible_tower_basename }}-{{ ansible_tower_version }}.tar.gz"
     ansible_tower_release_url: "http://releases.ansible.com/ansible-tower/setup/{{ ansible_tower_archive }}"
 
