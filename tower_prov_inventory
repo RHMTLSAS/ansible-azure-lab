@@ -1,0 +1,2 @@
+tower ansible_ssh_host=tower.doogie.ca
+tower ansible_ssh_host=tower.doogie.ca ansible_user=root

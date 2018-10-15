@@ -14,7 +14,7 @@ all: requirements
 
 .PHONY:
 requirements:
-	ANSIBLE-GALAXY install -r roles/requirements.yml -p ./roles/ --force
+	$(ANSIBLE-GALAXY) install -r roles/requirements.yml -p ./roles/ --force
 
 .PHONY:
 clean:
